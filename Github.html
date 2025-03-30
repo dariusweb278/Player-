@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Music Player</title>
+  <!-- Include FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    /* General body reset and styles */
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* Music Player Container */
+    .player-container {
+      background-color: white;
+      border-radius: 40px;
+      padding: 30px;
+      width: 320px;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    /* App Name Styling */
+    .app-name {
+      font-size: 24px;
+      color: #000;
+      margin-bottom: 15px;
+    }
+
+    /* Track Information */
+    .track-info p {
+      font-size: 16px;
+      color: #444;
+      margin: 5px 0;
+    }
+
+    /* Audio player (hidden controls by default) */
+    audio {
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 15px;
+      background-color: #eee;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      width: 50px;
+      height: 50px;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    /* Previous and Next Buttons */
+    #prev-btn {
+      background-color: #8e8e8e;
+    }
+
+    #next-btn {
+      background-color: #8e8e8e;
+    }
+
+    /* Playlist (Optional - if you want to show a playlist) */
+    .playlist {
+      margin-top: 30px;
+    }
+
+    .playlist ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .playlist li {
+      padding: 5px 0;
+      color: #333;
+      font-size: 14px;
+      text-align: left;
+      padding-left: 15px;
+    }
+
+    /* Customizing Audio Player controls for mobile */
+    audio::-webkit-media-controls-panel {
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    audio::-webkit-media-controls-play-button {
+      background-color: #4CAF50;
+      border-radius: 50%;
+    }
+
+    audio::-webkit-media-controls-volume-slider {
+      border-radius: 10px;
+    }
+
+    audio::-webkit-media-controls-current-time-display,
+    audio::-webkit-media-controls-time-remaining-display {
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Music Player Container -->
+  <div class="player-container">
+    <h1>d-music</h1>
+
+    <!-- Track Information -->
+    <div class="track-info">
+      <p id="track-title">.....................................</p>
+      <p id="track-artist">listen all day</p>
+    </div>
+
+    <!-- Audio Player Controls -->
+    <audio id="audio-player" controls>
+      <source id="audio-source" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+      Your browser does not support the audio element.
+    </audio>
+
+    <div class="controls">
+      <!-- Previous and Next Buttons -->
+      <button id="prev-btn"><i class="fas fa-backward"></i></button>
+      <button id="play-pause-btn"><i class="fas fa-play"></i></button>
+      <button id="next-btn"><i class="fas fa-forward"></i></button>
+    </div>
+
+    <!-- Playlist -->
+    <div class="playlist">
+      <ul>
+        <li>Track 1: SoundHelix Song 1</li>
+        <li>Track 2: SoundHelix Song 2</li>
+        <li>Track 3: SoundHelix Song 3</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const playPauseButton = document.getElementById('play-pause-btn');
+    const prevButton = document.getElementById('prev-btn');
+    const nextButton = document.getElementById('next-btn');
+    const audioPlayer = document.getElementById('audio-player');
+    const trackTitle = document.getElementById('track-title');
+    const trackArtist = document.getElementById('track-artist');
+
+    let isPlaying = false;
+    let currentTrackIndex = 0;
+
+    const playlist = [
+      { title: 'SoundHelix Song 1', artist: 'SoundHelix', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+      { title: 'SoundHelix Song 2', artist: 'SoundHelix', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+      { title: 'SoundHelix Song 3', artist: 'SoundHelix', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' }
+    ];
+
+    function loadTrack(index) {
+      const track = playlist[index];
+      audioPlayer.src = track.src;
+      trackTitle.textContent = track.title;
+      trackArtist.textContent = track.artist;
+      audioPlayer.load();
+    }
+
+    function playPause() {
+      if (isPlaying) {
+        audioPlayer.pause();
+        playPauseButton.innerHTML = '<i class="fas fa-play"></i>';
+      } else {
+        audioPlayer.play();
+        playPauseButton.innerHTML = '<i class="fas fa-pause"></i>';
+      }
+      isPlaying = !isPlaying;
+    }
+
+    function prevTrack() {
+      currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+      loadTrack(currentTrackIndex);
+      audioPlayer.play();
+      playPauseButton.innerHTML = '<i class="fas fa-pause"></i>';
+      isPlaying = true;
+    }
+
+    function nextTrack() {
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      loadTrack(currentTrackIndex);
+      audioPlayer.play();
+      playPauseButton.innerHTML = '<i class="fas fa-pause"></i>';
+      isPlaying = true;
+    }
+
+    playPauseButton.addEventListener('click', playPause);
+    prevButton.addEventListener('click', prevTrack);
+    nextButton.addEventListener('click', nextTrack);
+
+    // Load the first track initially
+    loadTrack(currentTrackIndex);
+  </script>
+
+</body>
+</html>
